@@ -21,7 +21,6 @@ class TASA(nn.Module):
         # self.dec_start = nn.Linear(hid_size, hid_size)
         self.dec0 = nn.LSTMCell(emb_size, hid_size)
         self.logits = nn.Linear(hid_size, len(inp_voc))
-        self.softmax = nn.Softmax()
         self.linear_influence = nn.Linear(seq_len, seq_len)
         self.sigmoid = nn.Sigmoid()
 
@@ -102,13 +101,12 @@ class TASA(nn.Module):
             inp_emb = self.emb_inp(S)
             deltas = self.sigmoid(self.linear_influence(T))
             v_hats = inp_emb * deltas.unsqueeze(-1)
-        # print(v_hats.shape)
 
         for i in range(sessions.shape[1]):
             state, logits = self.decode_step(state, v_hats[:, i])
             logits_sequence.append(logits)
 
-        return self.softmax(torch.stack(logits_sequence, dim=1))
+        return torch.stack(logits_sequence, dim=1)
 
     def decode_inference(self, initial_state, max_len=100, **flags):
         """ Generate translations from model (greedy version) """
