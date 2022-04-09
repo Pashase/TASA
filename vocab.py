@@ -57,7 +57,9 @@ class Vocab:
         for i, seq in enumerate(sessions):
             row_ix = list(map(self.token_to_ix.get, seq[-max_len + 1:]))
             a_matrix[i, :len(row_ix)] = torch.as_tensor(row_ix)
-            t_matrix[i, :len(row_ix)] = torch.as_tensor(taus[i][-max_len + 1:] + [self.end_tau])
+            
+            for j, tau in enumerate(taus[i][-max_len + 1:]):
+                t_matrix[i, :len(row_ix)][j] = tau
             
         return a_matrix, t_matrix
 
