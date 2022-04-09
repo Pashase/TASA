@@ -48,18 +48,17 @@ class Vocab:
          [30 21 15 15 21 14 28 27 13 -1 -1]
          [25 37 31 34 21 20 37 21 28 19 13]]
         """
-        sessions = list(map(self.tokenize, sessions[-max_len + 1:]))
-        taus = [t[-max_len + 1:] for t in taus]
+        sessions = list(map(self.tokenize, sessions))
         max_len = max_len or max(map(len, sessions))
 
         a_matrix = torch.full((len(sessions), max_len), self.eos_ix, dtype=dtype)
         t_matrix = torch.full((len(sessions), max_len), self.end_tau, dtype=torch.float)
 
         for i, seq in enumerate(sessions):
-            row_ix = list(map(self.token_to_ix.get, seq))
+            row_ix = list(map(self.token_to_ix.get, seq[-max_len + 1:]))
             a_matrix[i, :len(row_ix)] = torch.as_tensor(row_ix)
-            t_matrix[i, :len(row_ix)] = torch.as_tensor(taus[i] + [self.end_tau])
-
+            t_matrix[i, :len(row_ix)] = torch.as_tensor(taus[i][-max_len + 1:] + [self.end_tau])
+            
         return a_matrix, t_matrix
 
     def to_lines(self, matrix):
