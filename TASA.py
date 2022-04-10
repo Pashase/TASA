@@ -41,18 +41,7 @@ class TASA(nn.Module):
         :returns: initial decoder state tensors, one or many
         """
         batch_size = inp.shape[0]
-
-        #         enc_seq, [last_state_but_not_really] = self.enc0(inp_emb)
-        #         # enc_seq: [batch, time, hid_size], last_state: [batch, hid_size]
-
-        #         # note: last_state is not _actually_ last because of padding, let's find the real last_state
-        #         lengths = (inp != self.inp_voc.eos_ix).to(torch.int64).sum(dim=1).clamp_max(inp.shape[1] - 1)
-        #         last_state = enc_seq[torch.arange(len(enc_seq)), lengths]
-        #         # ^-- shape: [batch_size, hid_size]
-
-        #         dec_start = self.dec_start(last_state)
         output, last_state = self.enc0(inp)
-        # return [dec_start]
 
         return [last_state]
 
@@ -64,14 +53,7 @@ class TASA(nn.Module):
         :return: a list of next decoder state tensors, a tensor of logits [batch, len(out_voc)]
         """
         prev_lstm0_state = prev_state[0]
-        #         with torch.no_grad():
-        #             inp_emb = self.emb_inp(prev_session)
-        #             print(prev_session.shape, prev_taus.shape)
-        #             deltas = self.sigmoid(self.linear_influence(prev_taus))
-        #             v_hats = inp_emb * deltas.unsqueeze(-1)
-
         prev_lstm0_state = (prev_lstm0_state[0].squeeze(0), prev_lstm0_state[1].squeeze(0))
-        # print(prev_v_hats.shape, prev_lstm0_state[0].shape, prev_lstm0_state[1].shape)
 
         new_lstm0_state = self.dec0(prev_v_hats, prev_lstm0_state)
         new_dec_state = [new_lstm0_state]
@@ -84,13 +66,6 @@ class TASA(nn.Module):
 
         batch_size = sessions.shape[0]
         state = initial_state
-
-        # initial logits: always predict BOS
-        #         onehot_bos = F.one_hot(torch.full([batch_size], self.out_voc.bos_ix, dtype=torch.int64),
-        #                                num_classes=len(self.out_voc)).to(device=out_tokens.device)
-        #         first_logits = torch.log(onehot_bos.to(torch.float32) + 1e-9)
-
-        #         logits_sequence = [first_logits]
 
         logits_sequence = []
         S, T = sessions.clone(), taus.clone()
