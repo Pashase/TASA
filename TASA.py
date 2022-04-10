@@ -15,10 +15,8 @@ class TASA(nn.Module):
         self.hid_size = hid_size
 
         self.emb_inp = nn.Embedding(len(inp_voc), emb_size)
-        # self.emb_out = nn.Embedding(len(out_voc), emb_size)
         self.enc0 = nn.LSTM(emb_size, hid_size, batch_first=True)
 
-        # self.dec_start = nn.Linear(hid_size, hid_size)
         self.dec0 = nn.LSTMCell(emb_size, hid_size)
         self.logits = nn.Linear(hid_size, len(inp_voc))
         self.linear_influence = nn.Linear(seq_len, seq_len)
@@ -27,7 +25,6 @@ class TASA(nn.Module):
     def forward(self, sessions, taus):
         """ Apply model in training mode """
         inp_emb = self.emb_inp(sessions)
-        # print(inp_emb.shape, taus.shape)
         deltas = self.sigmoid(self.linear_influence(taus))
         v_hats = inp_emb * deltas.unsqueeze(-1)
         last_state = self.encode(v_hats)
@@ -98,11 +95,3 @@ class TASA(nn.Module):
             all_states.append(state)
 
         return torch.stack(outputs, dim=1), all_states
-
-    def translate_lines(self, inp_lines, **kwargs):
-        # TODO
-        inp = inp_voc.to_matrix(inp_lines).to(DEVICE)
-        initial_state = self.encode(inp, **kwargs)
-        out_ids, states = self.decode_inference(initial_state, **kwargs)
-
-        return out_voc.to_lines(out_ids.cpu().numpy()), states
