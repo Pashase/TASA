@@ -4,4 +4,4 @@ TASA is general enough to be utilized for different types of downstream tasks in
 
 Paper: https://www.kdd.org/kdd2020/accepted-papers/view/time-aware-user-embeddings-as-a-service
 
-TASA implementation & tests .ipynb: https://colab.research.google.com/drive/1QuD_ktkY3LQaSdpVixNi5hVOFvoIEC6_?usp=sharing 
+TASA implementation & tests .ipynb: ... 
