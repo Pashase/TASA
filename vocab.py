@@ -41,9 +41,9 @@ class Vocab:
 
     def to_matrix(self, sessions, taus, dtype=torch.int64, max_len=None):
         """
-        convert variable length token sequences into a fixed size matrix
+        convert variable length token sequences into  fixed size matrix
         example usage:
-        >>>print(to_matrix(sessions[:3], source_to_ix))
+        >>>print(to_matrix(words[:3],source_to_ix))
         [[15 22 21 28 27 13 -1 -1 -1 -1 -1]
          [30 21 15 15 21 14 28 27 13 -1 -1]
          [25 37 31 34 21 20 37 21 28 19 13]]
@@ -53,14 +53,11 @@ class Vocab:
 
         a_matrix = torch.full((len(sessions), max_len), self.eos_ix, dtype=dtype)
         t_matrix = torch.full((len(sessions), max_len), self.end_tau, dtype=torch.float)
-
         for i, seq in enumerate(sessions):
-            row_ix = list(map(self.token_to_ix.get, seq[-max_len + 1:]))
+            row_ix = list(map(self.token_to_ix.get, seq[-max_len:]))
             a_matrix[i, :len(row_ix)] = torch.as_tensor(row_ix)
-            
-            for j, tau in enumerate(taus[i][-max_len + 1:]):
-                t_matrix[i, :len(row_ix)][j] = tau
-            
+            t_matrix[i, :len(row_ix) - 1] = torch.as_tensor(taus[i][-max_len + 1:])
+
         return a_matrix, t_matrix
 
     def to_lines(self, matrix):
