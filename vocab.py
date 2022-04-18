@@ -60,6 +60,6 @@ class Vocab:
 
         return a_matrix, t_matrix
 
-    def to_lines(self, matrix):
-        """ Convert matrix of token (actions) ids into sequences """
-        pass
+    def compute_mask(self, input_ix):
+        """ compute a boolean mask that equals "1" until first EOS (including that EOS) """
+        return F.pad(torch.cumsum(input_ix == 1, dim=-1) < 1, pad=(0, 0, 0, 0), value=True)
