@@ -57,10 +57,9 @@ class TASA(nn.Module):
     def decode(self, initial_state, sessions, taus, **flags):
         """ Iterate over reference tokens (out_tokens) with decode_step """
         
-        state = (initial_state[0].squeeze(0), initial_state[1].squeeze(0))
-        
         batch_size = sessions.shape[0]
         state = (initial_state[0].squeeze(0), initial_state[1].squeeze(0))
+        
         S, T = torch.hstack([torch.full((batch_size, 1), inp_voc.bos_ix, device=device), sessions[:, :-1].clone()]), \
                torch.hstack([torch.full((batch_size, 1), inp_voc.start_tau, device=device), taus[:, :-1].clone()])
         
