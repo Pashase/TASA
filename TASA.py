@@ -59,9 +59,11 @@ class TASA(nn.Module):
         
         state = (initial_state[0].squeeze(0), initial_state[1].squeeze(0))
         
-        S, T = sessions.clone(), taus.clone()
-        S[:0] = inp_voc.bos_ix
-        T[:0] = inp_voc.start_tau
+        batch_size = sessions.shape[0]
+        state = (initial_state[0].squeeze(0), initial_state[1].squeeze(0))
+        S, T = torch.hstack([torch.full((batch_size, 1), inp_voc.bos_ix, device=device), sessions[:, :-1].clone()]), \
+               torch.hstack([torch.full((batch_size, 1), inp_voc.start_tau, device=device), taus[:, :-1].clone()])
+        
         with torch.no_grad():
             inp_emb = self.emb_inp(S)
             deltas = self.sigmoid(self.linear_influence(T))
