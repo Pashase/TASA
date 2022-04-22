@@ -52,7 +52,7 @@ class TASA(nn.Module):
         new_dec_state = (h, c)
         output_logits = self.logits(h)
 
-        return new_dec_state, output_logits
+        return prev_lstm0_state, output_logits
 
     def decode(self, initial_state, sessions, taus, **flags):
         """ Iterate over reference tokens (out_tokens) with decode_step """
